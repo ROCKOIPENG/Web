@@ -24,8 +24,8 @@
         
         .container {
             width: 100%;
-            max-width: 800px;
-            height: 90vh;
+            /* max-width: 800px; */
+            height: 97vh;
             background: white;
             border-radius: 12px;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
@@ -102,7 +102,7 @@
         }
         
         .message {
-            max-width: 85%;
+            max-width: 75%;
             padding: 12px 16px;
             margin-bottom: 15px;
             border-radius: 8px;
@@ -644,20 +644,45 @@
             color: #007bff;
             text-decoration: none;
         }
+        
+        /* API密钥样式 */
+        .api-key-container {
+            position: relative;
+        }
+        
+        .api-key-toggle {
+            position: absolute;
+            right: 10px;
+            top: 38px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .api-key-toggle:hover {
+            color: #0084ff;
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        
+        .api-status .status-indicator {
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- 聊天头部 -->
         <div class="chat-header">
-            <div class="chat-avatar">N</div>
+            <div class="chat-avatar">AI</div>
             <div class="chat-info">
-                <h3>NaLang AI</h3>
-                <p>鹏 · <span id="status-text">准备就绪</span></p>
+                <h3>AI角色</h3>
+                <p>工作中 · <span id="status-text">准备就绪</span></p>
             </div>
-            <!-- <div class="chat-actions">
-                <i class="fas fa-info-circle" title="系统信息"></i>
-            </div> -->
         </div>
         
         <!-- TTS控制面板 -->
@@ -683,7 +708,7 @@
         
         <!-- 聊天区域 -->
         <div class="chat-messages" id="chat-messages">
-            <!-- <div class="message assistant">
+           <!-- <div class="message assistant">
                 <div class="message-actions">
                     <div class="message-action" title="朗读">
                         <i class="fas fa-volume-up"></i>
@@ -698,7 +723,7 @@
                         <i class="fas fa-volume-up"></i>
                     </div>
                 </div>
-                <div class="content">您可以在设置面板中导入导出完整的聊天记录和系统设置。</div>
+                <div class="content">您可以在设置面板中设置自己的API密钥，并导入导出完整的聊天记录和系统设置。</div>
                 <div class="time">12:00</div>
             </div> -->
         </div>
@@ -706,10 +731,7 @@
         <!-- 输入区域 -->
         <div class="chat-input-container">
             <div class="chat-input">
-                <!-- <i class="far fa-smile" title="表情"></i> -->
                 <textarea id="message-input" placeholder="输入消息..."></textarea>
-                <!-- <i class="fas fa-paperclip" title="附件"></i> -->
-                <!-- <i class="fas fa-camera" title="拍照"></i> -->
             </div>
             <button class="voice-input-btn" id="voice-btn" title="语音输入">
                 <i class="fas fa-microphone"></i>
@@ -734,14 +756,24 @@
                 </button>
             </div>
             
-            <!-- TTS兼容性警告 -->
-            <!-- <div class="tts-warning" id="tts-warning">
-                <p><strong>数据导入导出功能：</strong> 支持完整保存聊天记录、系统设置和TTS参数</p>
-            </div> -->
+            <!-- API密钥设置 -->
+            <div class="form-group">
+                <label for="api-key">API密钥</label>
+                <div class="api-key-container">
+                    <input type="password" id="api-key" placeholder="输入您的API密钥" value="557d1307-c9e9-4aea-9730-53e2b4ca1570">
+                    <span class="api-key-toggle" id="api-key-toggle">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <div class="api-status">
+                    <span class="status-indicator status-active" id="api-status-indicator"></span>
+                    <span id="api-status-text">已保存默认密钥</span>
+                </div>
+            </div>
             
             <div class="form-group">
                 <label for="system-prompt">系统提示词</label>
-                <textarea id="system-prompt">你是一个有帮助的AI助手。请用中文回答用户的问题，保持友好和专业的态度。</textarea>
+                <textarea id="system-prompt">你是一个权威严肃的AI助手。请用中文回答用户的问题，保持友好和专业的态度。</textarea>
             </div>
             
             <div class="form-group">
@@ -749,6 +781,7 @@
                 <select id="model">
                     <option value="nalang-xl-10">NaLang XL-10</option>
                     <option value="nalang-xl-16k">NaLang XL-16K</option>
+					 <option value="nalang-v17-2">NaLang Turbo v17</option>
                     <option value="nalang-turbo-v18">NaLang Turbo v18</option>
                     <option value="nalang-turbo-v19">NaLang Turbo v19</option>
                 </select>
@@ -828,7 +861,7 @@
         let tokenCount = 0;
         let conversationHistory = [
             // { role: 'assistant', content: '您好！我是NaLang AI助手，支持完整的TTS功能和数据导入导出功能。', time: '12:00' },
-            // { role: 'assistant', content: '您可以在设置面板中导入导出完整的聊天记录和系统设置。', time: '12:00' }
+            // { role: 'assistant', content: '您可以在设置面板中设置自己的API密钥，并导入导出完整的聊天记录和系统设置。', time: '12:00' }
         ];
         
         // TTS相关变量
@@ -866,18 +899,24 @@
         const importBtn = document.getElementById('import-btn');
         const exportBtn = document.getElementById('export-btn');
         const fileInput = document.getElementById('file-input');
-        const ttsWarning = document.getElementById('tts-warning');
         const systemPrompt = document.getElementById('system-prompt');
         const temperature = document.getElementById('temperature');
         const maxTokens = document.getElementById('max-tokens');
         const topP = document.getElementById('top-p');
         const repetitionPenalty = document.getElementById('repetition-penalty');
+        const apiKeyInput = document.getElementById('api-key');
+        const apiKeyToggle = document.getElementById('api-key-toggle');
+        const apiStatusIndicator = document.getElementById('api-status-indicator');
+        const apiStatusText = document.getElementById('api-status-text');
         
         // 初始化语音
         function initVoices() {
             // 检查浏览器是否支持TTS
             if (!window.speechSynthesis) {
-                ttsWarning.innerHTML = '<p><strong>TTS不兼容：</strong> 您的浏览器不支持语音合成功能。请使用最新版的Chrome、Edge或Safari浏览器。</p>';
+                const warningDiv = document.createElement('div');
+                warningDiv.className = 'tts-warning';
+                warningDiv.innerHTML = '<p><strong>TTS不兼容：</strong> 您的浏览器不支持语音合成功能。请使用最新版的Chrome、Edge或Safari浏览器。</p>';
+                document.querySelector('.api-settings').insertBefore(warningDiv, document.querySelector('.api-settings .form-group'));
                 ttsStatus.querySelector('span:first-child').textContent = 'TTS状态: 浏览器不支持';
                 return;
             }
@@ -922,7 +961,7 @@
                 voiceSelect.value = index;
             }
             
-            console.log('语音列表初始化完成', voices);
+            // console.log('语音列表初始化完成', voices);
         }
 
         // 更新状态
@@ -990,7 +1029,7 @@
                     <span></span>
                     <span></span>
                 </div>
-                <div>AI正在输入...</div>
+                <div>对方正在输入中...</div>
             `;
             
             chatMessages.appendChild(typingDiv);
@@ -1091,6 +1130,12 @@
             const userMessage = messageInput.value.trim();
             if (!userMessage || isStreaming) return;
             
+            // 检查API密钥
+            if (!apiKeyInput.value) {
+                showNotification('请先在设置面板中输入API密钥', true);
+                return;
+            }
+            
             // 添加用户消息
             addMessage('user', userMessage);
             messageInput.value = '';
@@ -1135,7 +1180,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer 8b803a6f-beee-4e95-acc6-40e3820bb543'
+                        'Authorization': `Bearer ${apiKeyInput.value}`
                     },
                     body: JSON.stringify(requestBody),
                     signal: controller.signal
@@ -1248,8 +1293,8 @@
         // 重置对话
         function resetConversation() {
             conversationHistory = [
-                // { role: 'assistant', content: '您好！我是NaLang AI助手，支持完整的TTS功能和数据导入导出功能。', time: '12:00' },
-                // { role: 'assistant', content: '您可以在设置面板中导入导出完整的聊天记录和系统设置。', time: '12:00' }
+                { role: 'assistant', content: '您好！我是NaLang AI助手，支持完整的TTS功能和数据导入导出功能。', time: '12:00' },
+                { role: 'assistant', content: '您可以在设置面板中设置自己的API密钥，并导入导出完整的聊天记录和系统设置。', time: '12:00' }
             ];
             
             renderConversation();
@@ -1306,6 +1351,7 @@
                 },
                 conversationHistory: conversationHistory,
                 settings: {
+                    apiKey: apiKeyInput.value,
                     systemPrompt: systemPrompt.value,
                     model: modelSelect.value,
                     temperature: temperature.value,
@@ -1359,6 +1405,13 @@
                     maxTokens.value = importedData.settings.maxTokens || maxTokens.value;
                     topP.value = importedData.settings.topP || topP.value;
                     repetitionPenalty.value = importedData.settings.repetitionPenalty || repetitionPenalty.value;
+                    
+                    // 恢复API密钥
+                    if (importedData.settings.apiKey) {
+                        apiKeyInput.value = importedData.settings.apiKey;
+                        apiStatusText.textContent = '已导入API密钥';
+                        apiStatusIndicator.className = 'status-indicator status-active';
+                    }
                     
                     // 恢复语音设置
                     if (importedData.settings.voiceSettings) {
@@ -1462,6 +1515,25 @@
             };
         }
         
+        // 切换API密钥可见性
+        function toggleApiKeyVisibility() {
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                apiKeyToggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                apiKeyInput.type = 'password';
+                apiKeyToggle.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+        
+        // 保存API密钥
+        function saveApiKey() {
+            localStorage.setItem('apiKey', apiKeyInput.value);
+            apiStatusText.textContent = 'API密钥已保存';
+            apiStatusIndicator.className = 'status-indicator status-active';
+            showNotification('API密钥已保存');
+        }
+        
         // 事件监听
         sendBtn.addEventListener('click', sendMessage);
         
@@ -1531,12 +1603,27 @@
         importBtn.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', importFullData);
         
+        // API密钥事件
+        apiKeyToggle.addEventListener('click', toggleApiKeyVisibility);
+        apiKeyInput.addEventListener('blur', saveApiKey);
+        
         // 初始化
         updateStatus('inactive', '在线');
         ttsStatus.querySelector('span:first-child').textContent = 'TTS状态: 准备就绪';
         voiceWave.style.display = 'none';
         messageCount.textContent = conversationHistory.length;
         modelDisplay.textContent = modelSelect.options[modelSelect.selectedIndex].text;
+        
+        // 从本地存储加载API密钥
+        const savedApiKey = localStorage.getItem('apiKey');
+        if (savedApiKey) {
+            apiKeyInput.value = savedApiKey;
+            apiStatusText.textContent = '已加载当前密钥';
+            apiStatusIndicator.className = 'status-indicator status-active';
+        } else {
+            apiStatusText.textContent = '如无法使用请联系管理员获取最新密钥';
+            apiStatusIndicator.className = 'status-indicator status-inactive';
+        }
         
         // 初始化语音
         window.addEventListener('load', () => {
