@@ -887,17 +887,17 @@
 
 				<div class="form-group">
 					<label for="temperature">温度 (Temperature)<br>
-						控制生成文本的随机性：值越高，输出越随机、创意；值越低，输出越确定、保守。
-						<br>
-						范围：0.0 - 2.0
-					</label><span id="temperature-rate-value">0.7</span>
+						控制生成文本的随机性：<br>
+						值越高，输出越随机、创意；<br>值越低，输出越确定、保守。<br>
+						范围：0.0 - 2.0</label>
+					<span id="temperature-rate-value">0.7</span>
 					<input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7">
 				</div>
 
 				<div class="form-group">
 					<label for="max-tokens">最大令牌数 (Max Tokens)<br>
-						控制生成文本的最大长度：限制AI生成响应的长度。
-						<br>
+						控制生成文本的最大长度：<br>
+						限制AI生成响应的长度。<br>
 						范围：100 - 2000</label>
 					<span id="max-tokens-rate-value">400</span>
 					<input type="range" id="max-tokens" min="100" max="2000" value="400">
@@ -905,8 +905,8 @@
 
 				<div class="form-group">
 					<label for="top-p">Top P<br>
-						控制生成文本的多样性：值越低，输出越集中；值越高，输出越多样。
-						<br>
+						控制生成文本的多样性：<br>
+						值越低，输出越集中；<br>值越高，输出越多样。<br>
 						范围：0.0 - 1.0</label>
 					<span id="top-p-rate-value">0.35</span>
 					<input type="range" id="top-p" min="0" max="1" step="0.05" value="0.35">
@@ -914,8 +914,8 @@
 
 				<div class="form-group">
 					<label for="repetition-penalty">重复惩罚 (Repetition Penalty)<br>
-						防止文本重复：值越高，AI越避免重复使用相同的单词和短语。
-						<br>
+						防止文本重复：<br>
+						值越高，AI越避免重复使用相同的单词和短语。<br>
 						范围：1.0 - 2.0</label>
 					<span id="repetition-penalty-rate-value">1.05</span>
 					<input type="range" id="repetition-penalty" min="1" max="2" step="0.05" value="1.05">
@@ -930,16 +930,18 @@
 
 				<div class="form-group">
 					<label for="voice-rate">语速<br>
-					控制AI朗读的语速，所有音色均适用
-					范围：0.1 - 2.0</label>
+						控制AI朗读的语速：<br>
+						所有音色均适用<br>
+						范围：0.1 - 2.0</label>
 					<span id="voice-rate-value">1</span>
 					<input type="range" id="voice-rate" min="0.1" max="2" step="0.1" value="1">
 				</div>
 
 				<div class="form-group">
 					<label for="voice-pitch">音调<br>
-					控制AI朗读的音调，自然音不适用
-					范围：0.1 - 2.0</label>
+						控制AI朗读的音调：<br>
+						自然音不适用<br>
+						范围：0.1 - 2.0</label>
 					<span id="voice-pitch-value">1</span>
 					<input type="range" id="voice-pitch" min="0.1" max="2" step="0.1" value="1">
 				</div>
@@ -1561,6 +1563,10 @@
 						maxTokens.value = importedData.settings.maxTokens || maxTokens.value;
 						topP.value = importedData.settings.topP || topP.value;
 						repetitionPenalty.value = importedData.settings.repetitionPenalty || repetitionPenalty.value;
+						temperatureRateValue.textContent = temperature.value;
+						maxTokensRateValue.textContent = maxTokens.value;
+						topPRateValue.textContent = topP.value;
+						repetitionPenaltyRateValue.textContent = repetitionPenalty.value;
 
 						// 恢复API密钥
 						if (importedData.settings.apiKey) {
